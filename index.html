@@ -1,0 +1,1524 @@
+<title>Fundamentos en manga</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&family=Noto+Serif+JP:wght@700&display=swap">
+<style>
+/* Layout: tira de webtoon vertical (máx. 640px) sobre mesa lavanda; viñetas con borde de tinta, globos dibujados en SVG encima de cada imagen y recuadros de narración entre viñetas. Look único de papel de manga con acento morado. */
+:root{
+  --paper:#ffffff;--ink:#111111;--desk:#e9e5f1;--violet:#6a34d4;--lav:#d9c9ff;--muted:#4a4458;
+  --sfx:"Bangers","Impact","Arial Black",sans-serif;
+  --body:"Comic Neue","Comic Sans MS","Trebuchet MS",sans-serif;
+  color-scheme:light;
+}
+body{background:var(--desk);color:var(--ink);font-family:var(--body);margin:0}
+.strip{max-width:640px;margin:0 auto;background:var(--paper);padding-block:0 36px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.head{padding-block:28px 6px;text-align:center}
+.kicker{font:400 15px/1 var(--sfx);letter-spacing:.2em;color:var(--violet);margin:0 0 8px}
+h1{margin:0;font:400 clamp(36px,10vw,56px)/1 var(--sfx);letter-spacing:.03em;text-wrap:balance;text-shadow:3px 3px 0 var(--lav)}
+.chapter{margin:44px 0 0;padding:18px 0 14px;border-block:4px solid var(--ink);text-align:center}
+.chapter p{margin:0 0 6px;font:400 15px/1 var(--sfx);letter-spacing:.2em;color:var(--violet)}
+.chapter h2{margin:0;font:400 clamp(28px,8vw,42px)/1.05 var(--sfx);letter-spacing:.03em;text-wrap:balance;text-shadow:3px 3px 0 var(--lav)}
+.scene{margin-top:38px}
+.scene h3{margin:0 0 10px;font:400 clamp(22px,6.4vw,30px)/1.1 var(--sfx);letter-spacing:.04em;text-wrap:balance}
+.scene h3 span{display:inline-block;background:var(--ink);color:#fff;padding:2px 8px;margin-right:6px;letter-spacing:.06em}
+.panel{position:relative;container-type:inline-size;border:3px solid var(--ink);background:#000;overflow:hidden;margin:0}
+.panel img{display:block;width:100%;height:auto}
+.panel svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.row .panel{min-width:0}
+.stack{display:grid;gap:10px;margin-top:14px}
+.say{position:absolute;transform:translate(-50%,-50%);text-align:center;font:700 var(--fs,5cqw)/1.12 var(--body);color:var(--ink);z-index:2;text-wrap:balance}
+.say.loud{text-transform:uppercase;font-weight:700}
+.say.th{font-style:italic}
+.date{display:inline-block;width:fit-content;background:var(--violet);color:#fff;border:2.5px solid var(--ink);font:700 15px/1.2 var(--body);padding:6px 10px;margin:0}
+.tag{position:absolute;top:8px;left:8px;z-index:2;background:var(--violet);color:#fff;border:2px solid var(--ink);font:700 clamp(11px,3.4cqw,16px)/1.2 var(--body);padding:4px 8px}
+.sfx{position:absolute;z-index:2;transform:translate(-50%,-50%) rotate(-8deg);font:400 var(--fs,13cqw)/1 var(--sfx);letter-spacing:.03em;color:#fff;-webkit-text-stroke:.09em var(--ink);paint-order:stroke fill;text-shadow:.05em .06em 0 var(--violet);white-space:nowrap}
+.label{position:absolute;z-index:2;transform:translate(-50%,-50%);background:#fff;border:2px solid var(--ink);font:700 var(--fs,5cqw)/1 var(--body);padding:.25em .4em;white-space:nowrap}
+.kanji{position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%);font:700 46cqw/1 "Noto Serif JP",serif;color:var(--ink)}
+.cap{font:700 16px/1.45 var(--body);background:#fff;border:2.5px solid var(--ink);box-shadow:5px 5px 0 var(--ink);padding:10px 14px;max-width:90%;width:fit-content;margin:8px 0}
+.cap.r{margin-left:auto}
+.cap.key{background:var(--violet);color:#fff;box-shadow:5px 5px 0 var(--ink)}
+.cap.key b{display:block;font:400 18px/1 var(--sfx);letter-spacing:.12em;margin-bottom:4px;color:var(--lav)}
+.cover-cap{position:absolute;left:50%;top:9%;transform:translateX(-50%);width:84%;z-index:2;text-align:center;font:400 clamp(18px,6.4cqw,34px)/1.15 var(--sfx);letter-spacing:.04em;color:#fff;-webkit-text-stroke:.06em var(--ink);paint-order:stroke fill;text-shadow:.05em .06em 0 var(--violet)}
+.review{margin-top:44px;border:3px solid var(--ink);box-shadow:6px 6px 0 var(--violet);padding:14px}
+.review h3{margin:0 0 10px;font:400 clamp(22px,6.4vw,30px)/1.1 var(--sfx);letter-spacing:.04em;color:var(--violet)}
+.review table{width:100%;border-collapse:collapse;font:400 15px/1.4 var(--body)}
+.review th,.review td{border:2px solid var(--ink);padding:6px 8px;text-align:left;vertical-align:top}
+.review th{background:var(--violet);color:#fff}
+.review td:first-child{font-weight:700;white-space:nowrap}
+.review.wrap td:first-child{white-space:normal}
+.review tr:nth-child(even) td{background:#f4effe}
+</style>
+
+<main class="strip">
+  <header class="head">
+    <p class="kicker">FUNDAMENTOS DEL BUDISMO NICHIREN</p>
+    <h1>Japón, siglo XIII</h1>
+  </header>
+
+  <div class="stack">
+    <figure class="panel" data-panel>
+      <img src="img/portada/p1.jpg" width="646" height="979" alt="Silueta del Daishonin de pie en un acantilado frente al mar, al amanecer, con aves cruzando el cielo.">
+      <p class="cover-cap">Esta historia empieza junto al mar… y llega a todo el mundo</p>
+    </figure>
+  </div>
+
+  <header class="chapter">
+    <p>CAPÍTULO 1</p>
+    <h2>Vida y enseñanza de Nichiren Daishonin</h2>
+  </header>
+
+  <!-- 1.1 -->
+  <section class="scene" id="s1-1">
+    <h3><span>1.1</span>Un niño junto al mar (1222)</h3>
+    <div class="stack">
+      <p class="date">16 de febrero de 1222 · poblado costero de Kataumi, aldea de Tojo, provincia de Awa</p>
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.1-p1.jpg" width="1095" height="712" alt="Aldea de pescadores al amanecer, con barcas en el mar.">
+      </figure>
+      <p class="cap">Nace en una familia de pescadores. A los 12 años entra a estudiar al templo Seicho-ji.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.1-p2.jpg" width="768" height="768" alt="El niño mira a gente pobre y enferma del pueblo.">
+          <span class="say" data-kind="speech" data-tip="52,46" style="left:52%;top:15%;width:78%;--fs:7.4cqw">Papá, ¿por qué hay tanta gente que sufre?</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.1-p3.jpg" width="768" height="768" alt="Padre e hijo en la orilla, de espaldas, mirando el mar.">
+          <span class="say" data-kind="speech" data-tip="40,33" style="left:56%;top:14%;width:80%;--fs:7.6cqw">Nadie ha sabido responder eso, hijo…</span>
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Nació el 16 de febrero de 1222 en la provincia de Awa.</p>
+    </div>
+  </section>
+
+  <!-- 1.2 -->
+  <section class="scene" id="s1-2">
+    <h3><span>1.2</span>El juramento</h3>
+    <div class="stack">
+      <p class="date">Templo Seicho-ji. Después, Kamakura, Kioto, Nara y el monte Hiei</p>
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.2-p1.jpg" width="1152" height="768" alt="De noche, el joven arrodillado ante el templo, con libros apilados a su lado.">
+      </figure>
+      <p class="cap">Se ordena bajo Dozen-bo. Ve escuelas budistas que se contradicen y estudia durante años en los grandes centros budistas.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.2-p2.jpg" width="768" height="768" alt="Primer plano de su cara decidida.">
+          <span class="say th" data-kind="thought" data-tip="50,38" style="left:50%;top:20%;width:96%;--fs:6.6cqw">Juro convertirme en la persona más sabia del Japón… para librar a todos del sufrimiento</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.2-p3.jpg" width="768" height="768" alt="Montaje de viajes: camino a Kamakura, templos de Kioto, el Enryaku-ji en el monte Hiei.">
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Ese juramento de niño fue el propósito de toda su vida.</p>
+    </div>
+  </section>
+
+  <!-- 1.3 -->
+  <section class="scene" id="s1-3">
+    <h3><span>1.3</span>La proclamación (1253)</h3>
+    <div class="stack">
+      <p class="date">28 de abril de 1253 · Seicho-ji. Tiene 32 años.</p>
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.3-p1.jpg" width="768" height="1152" alt="Amanecer sobre un mar de nubes; el Daishonin con los brazos abiertos.">
+        <span class="say loud" data-kind="burst" data-tip="44,29" style="left:36%;top:12%;width:64%;--fs:7.2cqw">¡Nam-myoho-renge-kyo!</span>
+      </figure>
+      <p class="cap">Adopta el nombre Nichiren, «sol-loto». Sabe que vendrán ataques, pero decide hablar.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.3-p2.jpg" width="768" height="768" alt="Tojo Kagenobu, furioso, ordena atacarlo.">
+          <span class="say loud" data-kind="burst" data-tip="43,41" style="left:30%;top:14%;width:58%;--fs:7cqw">¡Ataquen a ese monje!</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.3-p3.jpg" width="768" height="768" alt="El Daishonin escapa y se instala en una choza en Nagoe, Kamakura.">
+          <span class="tag">Nagoe, Kamakura</span>
+        </figure>
+      </div>
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.3-p4.jpg" width="1152" height="768" alt="Primeros discípulos: Toki Jonin, Shijo Kingo e Ikegami Munenaka.">
+        <span class="tag">Primeros discípulos: Toki Jonin, Shijo Kingo e Ikegami Munenaka</span>
+      </figure>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>El 28 de abril de 1253 establece su enseñanza, a los 32 años.</p>
+    </div>
+  </section>
+
+  <!-- 1.4 -->
+  <section class="scene" id="s1-4">
+    <h3><span>1.4</span>Un tratado para la paz (1260)</h3>
+    <div class="stack">
+      <p class="date">16 de julio de 1260 · Kamakura</p>
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.4-p1.jpg" width="1152" height="768" alt="Kamakura destruida por el terremoto de la era Shoka, gente refugiada.">
+        <span class="tag">Terremoto de la era Shoka (agosto de 1257)</span>
+      </figure>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.4-p2.jpg" width="768" height="768" alt="El Daishonin escribe de noche, a la luz de una lámpara.">
+          <span class="say" data-kind="speech" data-tip="38,42" style="left:53%;top:16%;width:86%;--fs:6.4cqw">Para que haya paz en esta tierra, hay que establecer la enseñanza correcta</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.4-p3.jpg" width="768" height="768" alt="Entrega el rollo del tratado ante la puerta de Hojo Tokiyori.">
+        </figure>
+      </div>
+      <p class="cap">Advierte que, si no se corrige, vendrán la rebelión interna y la invasión extranjera.</p>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b><i>Sobre el establecimiento de la enseñanza correcta para asegurar la paz en la tierra</i>, entregado a Hojo Tokiyori. Es su primera amonestación al gobierno.</p>
+    </div>
+  </section>
+
+  <!-- 1.5 -->
+  <section class="scene" id="s1-5">
+    <h3><span>1.5</span>Llegan las persecuciones (1260–1264)</h3>
+    <div class="stack">
+      <p class="date">Matsubagayatsu (1260), Izu (1261), Komatsubara (1264)</p>
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.5-p1.jpg" width="1152" height="768" alt="De noche, hombres con antorchas incendian su choza; él escapa ileso.">
+        <span class="say loud" data-kind="burst" data-tip="30,58" style="left:26%;top:15%;width:36%;--fs:4.8cqw">¡Quemen su choza!</span>
+        <span class="sfx" style="left:76%;top:18%;--fs:9cqw">¡FWOOM!</span>
+      </figure>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.5-p2.jpg" width="768" height="768" alt="Lo llevan en barca al exilio de Izu.">
+          <span class="tag">Exilio a Izu (1261)</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.5-p3.jpg" width="768" height="768" alt="Emboscada en Komatsubara: espadas, un seguidor cae.">
+          <span class="sfx" style="left:50%;top:14%;--fs:14cqw">¡CLANG!</span>
+        </figure>
+      </div>
+      <p class="cap">En 1264 vuelve a Awa para visitar a su madre enferma y lo emboscan los hombres de Tojo Kagenobu.</p>
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.5-p4.jpg" width="1152" height="768" alt="El Daishonin herido en la frente y con la mano izquierda rota, pero de pie.">
+        <span class="say" data-kind="speech" data-tip="49,26" style="left:22%;top:15%;width:36%;--fs:4.4cqw">Ninguna amenaza me hará retroceder</span>
+      </figure>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Persecuciones de Matsubagayatsu, exilio a Izu (perdón en 1263) y Komatsubara.</p>
+    </div>
+  </section>
+
+  <!-- 1.6 -->
+  <section class="scene" id="s1-6">
+    <h3><span>1.6</span>Tatsunokuchi (1271)</h3>
+    <div class="stack">
+      <p class="date">10 y 12 de septiembre de 1271 · Kamakura y la playa de Tatsunokuchi</p>
+      <p class="cap">En 1268 el Imperio mongol amenaza con invadir. Ryokan, venerado por la gente, se vuelve su enemigo y conspira con el gobierno.</p>
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.6-p1.jpg" width="1152" height="746" alt="Ryokan reza para que llueva y falla; en vez de lluvia, vendavales.">
+        <span class="sfx" style="left:72%;top:16%;--fs:10cqw">¡FIUUUU!</span>
+      </figure>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.6-p2.jpg" width="768" height="768" alt="Hei no Saemon-no-jo arresta al Daishonin, que lo confronta.">
+          <span class="say" data-kind="speech" data-tip="38,30" style="left:48%;top:14%;width:90%;--fs:6.6cqw">Al atacar a Nichiren, derriban el pilar del Japón</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.6-p3.jpg" width="768" height="768" alt="De noche, soldados con antorchas lo llevan a la playa; el verdugo levanta la espada.">
+          <span class="say loud" data-kind="burst" data-tip="64,36" style="left:79%;top:12%;width:40%;--fs:5.8cqw">¡Ha llegado tu hora!</span>
+          <span class="say th" data-kind="thought" data-tip="47,50" style="left:22%;top:13%;width:42%;--fs:5.4cqw">Tal como lo predice el Sutra del loto…</span>
+        </figure>
+      </div>
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.6-p4.jpg" width="1152" height="768" alt="Un objeto luminoso cruza el cielo; los soldados caen aterrados y él sigue sereno.">
+        <span class="sfx" style="left:70%;top:12%;--fs:10cqw">¡FWOOSH!</span>
+        <span class="say loud" data-kind="burst" data-tip="31,60" style="left:22%;top:22%;width:30%;--fs:4.2cqw">¡¿Q-qué es esa luz?!</span>
+        <span class="say loud" data-kind="burst" data-tip="80,62" style="left:84%;top:38%;width:20%;--fs:4.4cqw">¡Huyan!</span>
+      </figure>
+      <p class="cap">Iban a decapitarlo en secreto, pero no se atreven.</p>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Aquí «desecha lo transitorio y revela lo verdadero»: se manifiesta como el Buda del Último Día de la Ley. Desde entonces inscribe el Gohonzon. Los hechos del 10 y el 12 de septiembre se consideran su segunda advertencia al gobierno.</p>
+    </div>
+  </section>
+
+  <!-- 1.7 -->
+  <section class="scene" id="s1-7">
+    <h3><span>1.7</span>El exilio en Sado (1271–1274)</h3>
+    <div class="stack">
+      <p class="date">Del 1 de noviembre de 1271 a 1274 · cementerio de Tsukahara y después Ichinosawa, isla de Sado</p>
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.7-p1.jpg" width="1152" height="768" alt="Una choza en ruinas en un cementerio nevado.">
+      </figure>
+      <p class="cap">Sobrevive sin comida ni abrigo, rodeado de enemigos. Ahí escribe obras fundamentales y muchos se vuelven sus discípulos.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.7-p2.jpg" width="768" height="768" alt="El Daishonin escribe sin abrigo, con Nikko a su lado.">
+          <span class="say" data-kind="speech" data-tip="33,41" style="left:50%;top:19%;width:96%;--fs:7cqw">Aunque nieve y no tenga nada, seguiré escribiendo para mis discípulos</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.7-p3.jpg" width="768" height="768" alt="Debate de Tsukahara: cientos de sacerdotes contra él, y él los refuta.">
+          <span class="tag">Debate de Tsukahara</span>
+        </figure>
+      </div>
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.7-p4.jpg" width="1152" height="768" alt="Abutsu-bo y Sennichi le llevan comida a escondidas.">
+        <span class="tag">Abutsu-bo y la monja laica Sennichi</span>
+      </figure>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>En Sado escribe <i>La apertura de los ojos</i> y <i>El objeto de devoción para observar la vida</i>. El debate de Tsukahara fue el 16 y 17 de enero de 1272.</p>
+    </div>
+  </section>
+
+  <!-- 1.8 -->
+  <section class="scene" id="s1-8">
+    <h3><span>1.8</span>El monte Minobu (1274)</h3>
+    <div class="stack">
+      <p class="date">1274 · Kamakura y monte Minobu, provincia de Kai</p>
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.8-p1.jpg" width="1152" height="768" alt="Indultado en febrero, vuelve a Kamakura.">
+        <span class="tag">Indultado en febrero, vuelve a Kamakura</span>
+      </figure>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.8-p2.jpg" width="768" height="768" alt="En abril confronta a Hei no Saemon-no-jo: tercera advertencia.">
+          <span class="say" data-kind="speech" data-tip="36,31" style="left:26%;top:11%;width:45%;--fs:5.2cqw">¿Cuándo vendrán los mongoles?</span>
+          <span class="say" data-kind="speech" data-tip="68,32" style="left:75%;top:12%;width:44%;--fs:5.2cqw">Antes de que termine este año</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.8-p3.jpg" width="768" height="768" alt="Flota mongola atacando Kyushu en octubre.">
+          <span class="tag">Flota mongola atacando Kyushu en octubre</span>
+        </figure>
+      </div>
+      <p class="cap">En mayo de 1274 se muda a las laderas del monte Minobu. No es un retiro del mundo: forma discípulos y escribe cartas de aliento.</p>
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.8-p4.jpg" width="1152" height="768" alt="Choza en el valle de Minobu entre hojas de otoño; discípulos estudiando.">
+        <span class="say" data-kind="speech" data-tip="36,63" style="left:42%;top:11%;width:44%;--fs:4.2cqw">Ahora formaré a quienes continuarán</span>
+      </figure>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Tercera amonestación en 1274. La primera invasión mongola confirma su predicción.</p>
+    </div>
+  </section>
+
+  <!-- 1.9 -->
+  <section class="scene" id="s1-9">
+    <h3><span>1.9</span>La persecución de Atsuhara (1279)</h3>
+    <div class="stack">
+      <p class="date">21 de septiembre de 1279 · aldea de Atsuhara, provincia de Suruga, y Kamakura</p>
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.9-p1.jpg" width="1152" height="768" alt="Nikko enseña a campesinos en los arrozales de Fuji.">
+      </figure>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.9-p2.jpg" width="768" height="768" alt="Soldados arrestan a 20 campesinos bajo la lluvia.">
+          <span class="say loud" data-kind="burst" data-tip="27,36" style="left:42%;top:14%;width:72%;--fs:6.6cqw">¡Abandonen esa fe!</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.9-p3.jpg" width="768" height="768" alt="Interrogatorio en la residencia de Hei no Saemon-no-jo.">
+        </figure>
+      </div>
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.9-p4.jpg" width="1152" height="768" alt="Primer plano de los tres hermanos, firmes.">
+        <span class="say loud" data-kind="burst" data-tip="53,30" style="left:65%;top:11%;width:24%;--fs:5.4cqw">¡Jamás!</span>
+        <span class="tag">Jinshiro, Yagoro y Yarokuro</span>
+      </figure>
+      <p class="cap">Ninguno renuncia. Tres son ejecutados y los otros 17, expulsados. El joven Nanjo Tokimitsu protege a sus compañeros.</p>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Ante la fe de personas comunes, el 1 de octubre de 1279 el Daishonin declara que «cumplió el propósito de su advenimiento», en el 27.º año desde que estableció su enseñanza.</p>
+    </div>
+  </section>
+
+  <!-- 1.10 -->
+  <section class="scene" id="s1-10">
+    <h3><span>1.10</span>El relevo a Nikko Shonin (1282)</h3>
+    <div class="stack">
+      <p class="date">8 de septiembre y 13 de octubre de 1282 · de Minobu a Ikegami, provincia de Musashi</p>
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.10-p1.jpg" width="1152" height="768" alt="Enfermo, sale de Minobu tras 9 años, rumbo a unas aguas termales.">
+        <span class="tag">Enfermo, sale de Minobu tras 9 años</span>
+      </figure>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.10-p2.jpg" width="768" height="768" alt="En casa de Ikegami Munenaka, da una última clase sobre su tratado de 1260.">
+          <span class="say" data-kind="speech" data-tip="53,42" style="left:50%;top:16%;width:74%;--fs:6cqw">Nikko, te confío la enseñanza</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.10-p3.jpg" width="728" height="717" alt="Cerezo bajo el atardecer; los discípulos inclinados.">
+        </figure>
+      </div>
+      <p class="cap">Fallece a los 61 años. Nikko es el único que sigue luchando con el mismo valor y atesora sus «escritos honorables».</p>
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.10-p4.jpg" width="1152" height="768" alt="Nikko guarda los escritos con cuidado.">
+        <span class="say" data-kind="speech" data-tip="44,26" style="left:63%;top:12%;width:44%;--fs:4.4cqw">La protegeré con mi vida</span>
+      </figure>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Muere el 13 de octubre de 1282 en Ikegami. Le sucede Nikko Shonin.</p>
+    </div>
+  </section>
+
+  <!-- 1.11 -->
+  <section class="scene" id="s1-11">
+    <h3><span>1.11</span>La Ley que permea todo</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.11-p1.jpg" width="1152" height="768" alt="Shakyamuni medita bajo un árbol, con la luz del universo a su alrededor.">
+      </figure>
+      <p class="cap">Shakyamuni descubrió en su propia vida la Ley eterna del universo. El Daishonin reveló que esa Ley es Nam-myoho-renge-kyo.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.11-p2.jpg" width="768" height="768" alt="El cosmos con una flor de loto luminosa al centro.">
+          <span class="sfx" style="left:50%;top:16%;--fs:9.6cqw">Nam-myoho-renge-kyo</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.11-p3.jpg" width="768" height="768" alt="Gente común de hoy con una pequeña luz en el pecho.">
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Nam-myoho-renge-kyo es la Ley fundamental del universo y de la vida, la Ley esencial para lograr la budeidad, y existe en la vida de todas las personas.</p>
+    </div>
+  </section>
+
+  <!-- 1.12 -->
+  <section class="scene" id="s1-12">
+    <h3><span>1.12</span>El significado del nombre</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.12-p1.jpg" width="1152" height="960" alt="Un loto blanco brotando de un estanque lodoso.">
+        <span class="say" data-kind="speech" data-tip="71,34" style="left:36%;top:15%;width:28%;--fs:4.4cqw">¿Por qué un loto?</span>
+        <span class="say" data-kind="speech" data-tip="87,36" style="left:76%;top:16%;width:44%;--fs:3.6cqw">Porque florece puro en el lodo, y su flor y su fruto aparecen juntos</span>
+      </figure>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.12-p2.jpg" width="768" height="768" alt="Corte del capullo: la flor y la vaina de semillas a la vez.">
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.12-p3.jpg" width="768" height="768" alt="Los cuatro elementos del nombre como cartelitos: Nam, Myoho, Renge, Kyo.">
+          <span class="label" style="left:16%;top:51%;--fs:5.4cqw">Nam</span>
+          <span class="label" style="left:39%;top:51%;--fs:5.4cqw">Myoho</span>
+          <span class="label" style="left:63%;top:51%;--fs:5.4cqw">Renge</span>
+          <span class="label" style="left:85%;top:51%;--fs:5.4cqw">Kyo</span>
+        </figure>
+      </div>
+      <p class="cap">Myoho: la Ley Mística, difícil de comprender. Renge: el loto. Kyo: el sutra. Nam: dedicar la vida.</p>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Flor y fruto juntos = causa y efecto simultáneos. La budeidad ya existe en la persona común, y quien la manifiesta no deja de ser persona.</p>
+    </div>
+  </section>
+
+  <!-- 1.13 -->
+  <section class="scene" id="s1-13">
+    <h3><span>1.13</span>El Gohonzon</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.13-p1.jpg" width="1152" height="768" alt="El Daishonin con el pincel, inscribiendo un mandala en papel.">
+      </figure>
+      <p class="cap">El Daishonin representó su estado iluminado en un mandala para que todos podamos manifestar la misma budeidad.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.13-p2.jpg" width="768" height="768" alt="Una persona común sentada frente al altar, entonando.">
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.13-p3.jpg" width="768" height="768" alt="Su reflejo luminoso, como si el mandala estuviera dentro de ella.">
+          <span class="say loud" data-kind="burst" data-tip="33,29" style="left:50%;top:15%;width:94%;--fs:5.8cqw">¡Mi vida ha sido la budeidad desde el principio!</span>
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>«Jamás busque este Gohonzon fuera de usted misma». Las personas comunes son, en esencia, Nam-myoho-renge-kyo.</p>
+    </div>
+  </section>
+
+  <!-- 1.14 -->
+  <section class="scene" id="s1-14">
+    <h3><span>1.14</span>La budeidad en esta existencia</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.14-p1.jpg" width="1152" height="768" alt="Alguien triste por objetos que pierde: dinero, cosas, aplausos.">
+      </figure>
+      <p class="cap">Lograr significa «abrir» o «revelar». Se logra con la forma que cada uno posee, sin renacer como otro.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.14-p2.jpg" width="768" height="768" alt="Un montañista sube feliz una cuesta empinada con mochila pesada.">
+          <span class="say loud" data-kind="burst" data-tip="50,33" style="left:50%;top:15%;width:94%;--fs:5.4cqw">¡No tengo que esperar otra vida! Puedo manifestar la budeidad ahora</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.14-p3.jpg" width="768" height="768" alt="Un león sereno sobre una roca, al amanecer.">
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Felicidad relativa: depende de lo externo y se pierde. Felicidad absoluta: nace de dentro y nada la destruye (Josei Toda). También: «los deseos mundanos son la iluminación» y «los sufrimientos del nacimiento y la muerte son el nirvana».</p>
+    </div>
+  </section>
+
+  <!-- 1.15 -->
+  <section class="scene" id="s1-15">
+    <h3><span>1.15</span>Paz en la tierra y kosen-rufu</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c1/1.15-p1.jpg" width="1152" height="768" alt="El ideograma de «tierra» con el elemento «pueblo» dentro del marco, en vez de «rey».">
+        <span class="kanji" style="font-size:40cqw">囻</span>
+      </figure>
+      <p class="cap">La budeidad personal y la paz de la sociedad van juntas. El «gran juramento» es la propagación del Sutra del loto.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.15-p2.jpg" width="768" height="768" alt="Una multitud de bodhisattvas emerge de la tierra, encabezados por Prácticas Superiores.">
+          <span class="tag">Prácticas Superiores</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c1/1.15-p3.jpg" width="768" height="768" alt="Una gota de agua que se vuelve océano.">
+          <span class="say" data-kind="speech" data-tip="50,44" style="left:50%;top:24%;width:94%;--fs:6.2cqw">Fui como una sola gota de agua… pero cuando sean mil, diez mil y un millón, formarán un océano</span>
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Kosen-rufu = «propagación amplia y universal». El Buda confió esa misión a los Bodhisattvas de la Tierra. Es el propósito fundamental del Daishonin.</p>
+    </div>
+  </section>
+
+  <section class="review" id="repaso-1">
+    <h3>Ficha de repaso · Capítulo 1</h3>
+    <table>
+      <thead><tr><th>Fecha o tema</th><th>Dato</th></tr></thead>
+      <tbody>
+        <tr><td>1222</td><td>16 de febrero: nace en Awa.</td></tr>
+        <tr><td>1253</td><td>28 de abril: establece su enseñanza en el Seicho-ji, a los 32 años.</td></tr>
+        <tr><td>1260</td><td>16 de julio: entrega el tratado a Hojo Tokiyori. Primera amonestación.</td></tr>
+        <tr><td>1261</td><td>Exilio a Izu. En 1264, persecución de Komatsubara.</td></tr>
+        <tr><td>1271</td><td>12 de septiembre: Tatsunokuchi. Luego, exilio a Sado.</td></tr>
+        <tr><td>1274</td><td>Tercera amonestación y mudanza al monte Minobu.</td></tr>
+        <tr><td>1279</td><td>Persecución de Atsuhara. Cumple el propósito de su advenimiento.</td></tr>
+        <tr><td>1282</td><td>13 de octubre: fallece en Ikegami. Le sucede Nikko Shonin.</td></tr>
+        <tr><td>Tatsunokuchi</td><td>«Desechar lo transitorio y revelar lo verdadero».</td></tr>
+        <tr><td>Nombre</td><td>Nam (dedicar la vida), Myoho (Ley Mística), Renge (loto), Kyo (sutra).</td></tr>
+        <tr><td>Felicidad</td><td>Relativa (depende de lo externo) y absoluta (nace de dentro).</td></tr>
+        <tr><td>Kosen-rufu</td><td>Propagación amplia y universal, misión de los Bodhisattvas de la Tierra.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <header class="chapter">
+    <p>CAPÍTULO 2</p>
+    <h2>Los diez estados</h2>
+  </header>
+
+  <!-- 2.1 -->
+  <section class="scene" id="s2-1">
+    <h3><span>2.1</span>Diez estados en una vida</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c2/2.1-p1.jpg" width="1094" height="706" alt="La misma cara en cuatro recuadros pequeños: feliz, furiosa, serena, codiciosa.">
+      </figure>
+      <p class="cap">Los diez estados son condiciones interiores que existen en todas las personas. Antes del Sutra del loto se veían como mundos separados.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c2/2.1-p2.jpg" width="768" height="768" alt="Ella al centro, rodeada de diez luces en círculo.">
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c2/2.1-p3.jpg" width="768" height="768" alt="Primer plano: una luz dorada en su pecho.">
+          <span class="say th" data-kind="thought" data-tip="80,30" style="left:46%;top:10%;width:88%;--fs:5.8cqw">En un solo día paso por muchos estados…</span>
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Cada estado contiene a los otros nueve: es la «posesión mutua de los diez estados». «Ni la tierra pura ni el infierno existen fuera de nosotros mismos; ambos se encuentran en nuestro corazón».</p>
+    </div>
+  </section>
+
+  <!-- 2.2 -->
+  <section class="scene" id="s2-2">
+    <h3><span>2.2</span>Los cuatro malos caminos</h3>
+    <div class="stack">
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c2/2.2-p1.jpg" width="768" height="1024" alt="Infierno: alguien atrapado entre llamas, con la cara deformada por el odio.">
+          <span class="tag">Infierno</span>
+          <span class="say" data-kind="speech" data-tip="46,38" style="left:56%;top:21%;width:64%;--fs:7cqw">Todo me asfixia…</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c2/2.2-p2.jpg" width="768" height="1024" alt="Entidades hambrientas: alguien que alcanza un plato que nunca se llena.">
+          <span class="tag">Entidades hambrientas</span>
+          <span class="say loud" data-kind="burst" data-tip="45,40" style="left:17%;top:29%;width:28%;--fs:6.2cqw">¡Quiero más!</span>
+        </figure>
+      </div>
+      <p class="cap">El odio corresponde al infierno; la codicia, a las entidades hambrientas; la estupidez, a los animales; la perversidad, a los asuras.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c2/2.2-p3.jpg" width="768" height="1024" alt="Animales: alguien que se humilla ante un fuerte y empuja a un débil.">
+          <span class="tag">Animales</span>
+          <span class="say" data-kind="speech" data-tip="47,37" style="left:33%;top:24%;width:52%;--fs:7cqw">Solo lo de ahora</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c2/2.2-p4.jpg" width="768" height="1024" alt="Asuras: alguien que sonríe por fuera y, en su sombra, muestra envidia.">
+          <span class="tag">Asuras</span>
+          <span class="say loud" data-kind="burst" data-tip="70,47" style="left:52%;top:20%;width:76%;--fs:6.8cqw">¡Por encima de todos!</span>
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Infierno, hambrientas y animales son los «tres malos caminos». Con los asuras, son los «cuatro malos caminos». Los animales: «amenazar a los débiles y temer a los poderosos».</p>
+    </div>
+  </section>
+
+  <!-- 2.3 -->
+  <section class="scene" id="s2-3">
+    <h3><span>2.3</span>Seres humanos y seres celestiales</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c2/2.3-p1.jpg" width="1152" height="768" alt="Sentado tranquilo frente al agua, pensando.">
+        <span class="say" data-kind="speech" data-tip="36,30" style="left:68%;top:20%;width:42%;--fs:4.2cqw">Con calma, puedo distinguir lo correcto de lo incorrecto</span>
+      </figure>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c2/2.3-p2.jpg" width="768" height="768" alt="Fuegos artificiales estallan en el cielo; su cara se ilumina de alegría.">
+          <span class="sfx" style="left:24%;top:15%;--fs:15cqw">¡PUM!</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c2/2.3-p3.jpg" width="768" height="768" alt="Los fuegos se apagan y el cielo queda vacío.">
+        </figure>
+      </div>
+      <p class="cap">Seres humanos: calma, razón y autocontrol. Seres celestiales: la alegría de cumplir un deseo, que no dura.</p>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>La calma corresponde a los seres humanos y la alegría, a los seres celestiales. Los seis caminos dependen de las circunstancias externas, así que no son libres.</p>
+    </div>
+  </section>
+
+  <!-- 2.4 -->
+  <section class="scene" id="s2-4">
+    <h3><span>2.4</span>Los cuatro estados nobles</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c2/2.4-p1.jpg" width="1152" height="768" alt="Escalón 1: alguien que escucha una enseñanza y toma notas.">
+        <span class="tag">7. Los que escuchan la voz</span>
+        <span class="say" data-kind="speech" data-tip="43,38" style="left:40%;top:22%;width:30%;--fs:4.4cqw">Aprendo de las enseñanzas</span>
+      </figure>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c2/2.4-p2.jpg" width="768" height="768" alt="Escalón 2: alguien que ve caer una hoja y entiende que todo cambia.">
+          <span class="tag">8. Los que toman conciencia de las causas</span>
+          <span class="say loud" data-kind="burst" data-tip="47,41" style="left:24%;top:44%;width:42%;--fs:5.6cqw">¡Lo entendí al ver caer una hoja!</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c2/2.4-p3.jpg" width="768" height="768" alt="Escalón 3: alguien que le tiende la mano a otro caído.">
+          <span class="tag">9. Bodhisattvas</span>
+          <span class="say loud" data-kind="burst" data-tip="52,19" style="left:28%;top:31%;width:42%;--fs:6.6cqw">¡Toma mi mano!</span>
+        </figure>
+      </div>
+      <p class="cap">Los que escuchan la voz y los que toman conciencia de las causas logran una iluminación parcial, pero se centran en sí mismos. El bodhisattva busca la felicidad de los demás junto a la suya.</p>
+      <figure class="panel" data-panel>
+        <img src="img/c2/2.4-p4.jpg" width="1152" height="768" alt="Escalón 4: alguien con los brazos abiertos y aura de luz.">
+        <span class="tag">10. Budas</span>
+        <span class="say" data-kind="speech" data-tip="55,24" style="left:80%;top:17%;width:30%;--fs:4.4cqw">Sabiduría, valor y compasión</span>
+      </figure>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Los dos primeros son los «dos vehículos». La esencia del bodhisattva es el amor compasivo: «Hasta un villano desalmado ama a su esposa y a sus hijos».</p>
+    </div>
+  </section>
+
+  <!-- 2.5 -->
+  <section class="scene" id="s2-5">
+    <h3><span>2.5</span>La budeidad como base</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c2/2.5-p1.jpg" width="768" height="1152" alt="Sentada sobre un loto luminoso, con rayos detrás.">
+        <span class="say" data-kind="speech" data-tip="50,32" style="left:50%;top:15%;width:76%;--fs:5.6cqw">La budeidad es mi base. Desde ella, todo sirve para crear valor</span>
+      </figure>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c2/2.5-p2.jpg" width="768" height="768" alt="A su alrededor, los otros nueve estados como sombras que ahora la siguen.">
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c2/2.5-p3.jpg" width="768" height="768" alt="Un león sereno a su lado.">
+        </figure>
+      </div>
+      <p class="cap">No se trata de borrar los otros estados, sino de basar la vida en la budeidad. Por eso se compara con el espíritu del rey león, que no teme a nada.</p>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>«Si las personas comunes nacidas en la última época pueden creer en el Sutra del loto es porque, en el estado de humanidad, existe el estado de Budeidad». Nichikan: el estado de budeidad es la firme fe en el Gohonzon.</p>
+    </div>
+  </section>
+
+  <section class="review wrap" id="repaso-2">
+    <h3>Ficha de repaso · Capítulo 2</h3>
+    <table>
+      <thead><tr><th>Estado</th><th>Corresponde a</th><th>Grupo</th></tr></thead>
+      <tbody>
+        <tr><td>1. Infierno</td><td>Odio</td><td>Tres malos caminos</td></tr>
+        <tr><td>2. Entidades hambrientas</td><td>Codicia</td><td>Tres malos caminos</td></tr>
+        <tr><td>3. Animales</td><td>Estupidez</td><td>Tres malos caminos</td></tr>
+        <tr><td>4. Asuras</td><td>Perversidad</td><td>Con los tres anteriores, cuatro malos caminos</td></tr>
+        <tr><td>5. Seres humanos</td><td>Calma</td><td>Seis caminos</td></tr>
+        <tr><td>6. Seres celestiales</td><td>Alegría</td><td>Seis caminos</td></tr>
+        <tr><td>7. Los que escuchan la voz</td><td>Iluminación parcial al escuchar</td><td>Dos vehículos, estados nobles</td></tr>
+        <tr><td>8. Los que toman conciencia de las causas</td><td>Iluminación parcial por observación</td><td>Dos vehículos, estados nobles</td></tr>
+        <tr><td>9. Bodhisattvas</td><td>Amor compasivo</td><td>Estados nobles</td></tr>
+        <tr><td>10. Budas</td><td>Sabiduría, valor y compasión sin límites</td><td>Estados nobles</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <header class="chapter">
+    <p>CAPÍTULO 3</p>
+    <h2>Las tres pruebas y Fe, práctica y estudio</h2>
+  </header>
+
+  <!-- 3.1 -->
+  <section class="scene" id="s3-1">
+    <h3><span>3.1</span>Las tres pruebas</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c3/3.1-p1.jpg" width="1152" height="768" alt="Tres faroles encendidos sobre una mesa, cada uno con un cartel.">
+        <span class="say" data-kind="speech" data-tip="30,30" style="left:14.5%;top:30%;width:20%;--fs:3.5cqw">¿Cómo sé si una enseñanza es correcta?</span>
+        <span class="label" style="left:27.5%;top:86%;width:17%;white-space:normal;text-align:center;--fs:2.6cqw">Prueba documental</span>
+        <span class="label" style="left:51%;top:86%;width:17%;white-space:normal;text-align:center;--fs:2.6cqw">Prueba teórica</span>
+        <span class="label" style="left:73%;top:86%;width:17%;white-space:normal;text-align:center;--fs:2.6cqw">Prueba real</span>
+      </figure>
+      <p class="cap">Prueba documental: concuerda con los escritos. Prueba teórica: tiene lógica, porque «el budismo es razón». Prueba real: da resultados en la vida y en la sociedad.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c3/3.1-p2.jpg" width="768" height="768" alt="Analogía: un frasco de medicina con su receta (documento), su explicación (lógica) y un paciente que se cura (resultado).">
+          <span class="say" data-kind="speech" data-tip="1,52" style="left:28%;top:28%;width:48%;--fs:4.8cqw">Como con una medicina: su fórmula, su lógica y, sobre todo, si cura</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c3/3.1-p3.jpg" width="768" height="768" alt="El tercer farol brilla más que los otros.">
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>El Daishonin consideró la prueba real la más valiosa de las tres.</p>
+    </div>
+  </section>
+
+  <!-- 3.2 -->
+  <section class="scene" id="s3-2">
+    <h3><span>3.2</span>Fe, práctica y estudio</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c3/3.2-p1.jpg" width="1152" height="768" alt="Un carro con dos ruedas iguales que avanza por un camino al atardecer.">
+      </figure>
+      <p class="cap">La fe es creer en el Gohonzon. La práctica es para uno mismo y para los demás, como las dos ruedas de un carro. El estudio es aprender los escritos del Daishonin.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c3/3.2-p2.jpg" width="768" height="768" alt="Uno lee los escritos con una lámpara; otro conversa con un vecino.">
+          <span class="say" data-kind="speech" data-tip="66,40" style="left:34%;top:15%;width:62%;--fs:6cqw">Dos ruedas: para mí y para los demás</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c3/3.2-p3.jpg" width="768" height="768" alt="Los tres juntos empujando el carro.">
+          <span class="say loud" data-kind="burst" data-tip="50,30" style="left:50%;top:14%;width:90%;--fs:5.8cqw">Fe, práctica y estudio: ¡los tres juntos!</span>
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>«Tanto la práctica como el estudio derivan de la fe». Toda: «La fe requiere entendimiento. Y el entendimiento profundiza la fe».</p>
+    </div>
+  </section>
+
+  <!-- 3.3 -->
+  <section class="scene" id="s3-3">
+    <h3><span>3.3</span>El gongyo (nueva)</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c3/3.3-p1.jpg" width="1099" height="707" alt="Un espejo de metal empañado.">
+      </figure>
+      <p class="cap">El gongyo es recitar partes del Sutra del loto y entonar Nam-myoho-renge-kyo ante el Gohonzon. Una mente nublada es como un espejo empañado; el daimoku lo pule.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c3/3.3-p2.jpg" width="768" height="768" alt="Ella hace gongyo frente al altar, temprano.">
+          <span class="say th" data-kind="thought" data-tip="34,36" style="left:52%;top:12%;width:62%;--fs:6.4cqw">Cada día pulo mi espejo</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c3/3.3-p3.jpg" width="768" height="768" alt="El mismo espejo, pulido y brillante, refleja su cara serena.">
+        </figure>
+      </div>
+      <figure class="panel" data-panel>
+        <img src="img/c3/3.3-p4.jpg" width="1152" height="768" alt="Un plato de arroz con un poco de sal al lado, como analogía.">
+      </figure>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Práctica principal: entonar Nam-myoho-renge-kyo. Práctica complementaria: recitar los capítulos «Medios hábiles» (2) y «Duración de la vida» (16). Nichikan las comparó con el alimento y el aderezo.</p>
+    </div>
+  </section>
+
+  <!-- 3.4 -->
+  <section class="scene" id="s3-4">
+    <h3><span>3.4</span>Tres obstáculos y cuatro demonios</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c3/3.4-p1.jpg" width="1152" height="768" alt="Un barco avanza y levanta olas contra la proa.">
+      </figure>
+      <p class="cap">Como el agua contra un barco que avanza, al practicar aparecen fuerzas que se oponen al cambio. Lo que les da poder es la debilidad de nuestra propia fe.</p>
+      <figure class="panel" data-panel>
+        <img src="img/c3/3.4-p2.jpg" width="768" height="1152" alt="Sombras con ojos rojos lo rodean y le susurran.">
+        <span class="say th" data-kind="speech" data-tip="28,46" style="left:24%;top:30%;width:34%;--fs:6cqw">Ríndete…</span>
+      </figure>
+      <figure class="panel" data-panel>
+        <img src="img/c3/3.4-p3.jpg" width="1152" height="768" alt="Primer plano: él sonríe con determinación.">
+        <span class="say loud" data-kind="burst" data-tip="38,52" style="left:17%;top:22%;width:30%;--fs:3.8cqw">¡Si aparecen, es porque estoy avanzando!</span>
+      </figure>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Tres obstáculos: deseos mundanos, karma y retribución. Cuatro demonios: los cinco componentes, los deseos mundanos, la muerte y el Rey Demonio del Sexto Cielo. «Los sabios se regocijan, mientras que los necios se echan atrás».</p>
+    </div>
+  </section>
+
+  <!-- 3.5 -->
+  <section class="scene" id="s3-5">
+    <h3><span>3.5</span>Los tres enemigos poderosos</h3>
+    <div class="stack">
+      <p class="cap">El capítulo 13 del Sutra del loto anuncia que quien lo propague en el Último Día enfrentará a tres enemigos poderosos.</p>
+      <figure class="panel" data-panel>
+        <img src="img/c3/3.5-p1.jpg" width="1152" height="768" alt="Un laico que insulta y levanta un palo.">
+        <span class="tag">Laicos arrogantes</span>
+      </figure>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c3/3.5-p2.jpg" width="768" height="768" alt="Un sacerdote de corazón torcido que se cree superior.">
+          <span class="tag">Sacerdotes arrogantes</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c3/3.5-p3.jpg" width="768" height="768" alt="Un «venerable» de apariencia santa que susurra acusaciones al oído de un gobernante.">
+          <span class="tag">Falsos venerables arrogantes</span>
+          <span class="say" data-kind="speech" data-tip="40,44" style="left:58%;top:25%;width:58%;--fs:5.2cqw">Nosotros decidimos qué es lo correcto</span>
+        </figure>
+      </div>
+      <figure class="panel" data-panel>
+        <img src="img/c3/3.5-p4.jpg" width="1152" height="768" alt="Los practicantes siguen caminando, sin retroceder.">
+        <span class="say loud" data-kind="burst" data-tip="50,36" style="left:50%;top:15%;width:40%;--fs:4.6cqw">No vamos a retroceder</span>
+      </figure>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Laicos arrogantes, sacerdotes arrogantes y falsos venerables arrogantes. El tercero es el más dañino, porque es difícil reconocerlo.</p>
+    </div>
+  </section>
+
+  <!-- 3.6 -->
+  <section class="scene" id="s3-6">
+    <h3><span>3.6</span>Transformar el karma</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c3/3.6-p1.jpg" width="1152" height="768" alt="Bajo la lluvia, se pregunta por qué sufre sin haber hecho nada malo.">
+        <span class="say th" data-kind="thought" data-tip="54,30" style="left:79%;top:34%;width:28%;--fs:3.6cqw">¿Por qué tengo que sufrir de esta manera?</span>
+      </figure>
+      <p class="cap">Karma significa «acción», y las causas abarcan pasado, presente y futuro. La causa más negativa es denigrar la enseñanza correcta; la más positiva es creer en ella, protegerla y propagarla.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c3/3.6-p2.jpg" width="768" height="768" alt="Escarcha sobre las hojas que se evapora con el sol de la mañana.">
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c3/3.6-p3.jpg" width="768" height="768" alt="Un herrero forja una espada: fuego y golpes.">
+        </figure>
+      </div>
+      <figure class="panel" data-panel>
+        <img src="img/c3/3.6-p4.jpg" width="1152" height="768" alt="Ella sale al sol, firme.">
+        <span class="say" data-kind="speech" data-tip="54,16" style="left:76%;top:15%;width:34%;--fs:4.4cqw">Esta dificultad me va a forjar</span>
+      </figure>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>«El origen de las faltas, como la escarcha o el rocío, puede ser evaporado por el sol de la sabiduría», y ese sol es Nam-myoho-renge-kyo. «disminuir la retribución de nuestro karma»: vivir los efectos en esta vida y de forma atenuada.</p>
+    </div>
+  </section>
+
+  <!-- 3.7 -->
+  <section class="scene" id="s3-7">
+    <h3><span>3.7</span>Del karma a la misión (nueva)</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c3/3.7-p1.jpg" width="1152" height="768" alt="Un bodhisattva luminoso elige bajar a un mundo oscuro, por compasión.">
+      </figure>
+      <p class="cap">Los bodhisattvas eligen nacer en este mundo para salvar a otros. Cuando convertimos el karma en misión, la adversidad se vuelve un ejemplo para otros.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c3/3.7-p2.jpg" width="768" height="768" alt="Ella, que superó su problema, escucha a alguien que pasa por lo mismo.">
+          <span class="say" data-kind="speech" data-tip="30,34" style="left:44%;top:16%;width:76%;--fs:6cqw">Yo pasé por eso. Por eso puedo ayudarte</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c3/3.7-p3.jpg" width="768" height="768" alt="Las dos sonríen.">
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Principio de «adoptar voluntariamente el karma apropiado».</p>
+    </div>
+  </section>
+
+  <!-- 3.8 -->
+  <section class="scene" id="s3-8">
+    <h3><span>3.8</span>Distintas personas, un mismo propósito (nueva)</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c3/3.8-p1.jpg" width="1152" height="768" alt="Cada uno en lo suyo: un médico, una estudiante, un agricultor, una madre.">
+      </figure>
+      <p class="cap">Cada uno despliega su individualidad, y todos aspiran juntos al kosen-rufu. Lo contrario es «un cuerpo con distintos propósitos».</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c3/3.8-p2.jpg" width="768" height="768" alt="Todos juntos en una reunión, mirando hacia el mismo lado.">
+          <span class="say" data-kind="speech" data-tip="62,44" style="left:50%;top:13%;width:86%;--fs:6cqw">Somos distintos, pero queremos lo mismo</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c3/3.8-p3.jpg" width="768" height="768" alt="Contraste: una fila de personas iguales, uniformadas, cada una con una idea distinta en la cabeza.">
+          <span class="tag" style="top:auto;bottom:8px">«un cuerpo con distintos propósitos»</span>
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>«Distintas personas con un mismo propósito». «Si usted comparte el mismo corazón que Nichiren, tiene que ser un Bodhisattva de la Tierra».</p>
+    </div>
+  </section>
+
+  <!-- 3.9 -->
+  <section class="scene" id="s3-9">
+    <h3><span>3.9</span>La fe es la vida cotidiana</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c3/3.9-p1.jpg" width="1152" height="768" alt="Un árbol con raíces doradas bajo tierra y frutos arriba.">
+      </figure>
+      <p class="cap">Si la fe es la raíz, la vida diaria es el tronco, las ramas y los frutos. Las fuerzas que protegen a quien practica se llaman deidades celestiales y benevolentes.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c3/3.9-p2.jpg" width="768" height="768" alt="Ella en su trabajo, saludando con confianza a sus compañeros.">
+          <span class="say" data-kind="speech" data-tip="50,40" style="left:50%;top:15%;width:86%;--fs:6cqw">Si la raíz es fuerte, el árbol da frutos</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c3/3.9-p3.jpg" width="768" height="768" alt="Una planta sin raíces arrastrada por el viento, como contraste.">
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>«Considere el servicio que presta a su señor feudal como la práctica del Sutra del loto». «La protección de las deidades depende de nuestra fuerza interior».</p>
+    </div>
+  </section>
+
+  <!-- 3.10 -->
+  <section class="scene" id="s3-10">
+    <h3><span>3.10</span>Nuestro comportamiento como seres humanos</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c3/3.10-p1.jpg" width="1152" height="768" alt="Un monje se inclina ante cada persona que pasa.">
+        <span class="tag" style="top:auto;bottom:8px">Jamás Despreciar</span>
+        <span class="say" data-kind="speech" data-tip="51,37" style="left:50%;top:15%;width:56%;--fs:4.2cqw">Los respeto profundamente, porque todos pueden llegar a ser budas</span>
+      </figure>
+      <p class="cap">La mayor nobleza humana es respetar la naturaleza de Buda de cada persona y cuidar a quien tenemos enfrente.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c3/3.10-p2.jpg" width="768" height="768" alt="Algunos se burlan; él sigue inclinándose.">
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c3/3.10-p3.jpg" width="768" height="768" alt="Hoy: alguien escucha con respeto a la persona que tiene enfrente.">
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>«El propósito con el cual nació en este mundo el buda Shakyamuni, señor de las enseñanzas, yace en su comportamiento como ser humano».</p>
+    </div>
+  </section>
+
+  <section class="review" id="repaso-3">
+    <h3>Ficha de repaso · Capítulo 3</h3>
+    <table>
+      <thead><tr><th>Tema</th><th>Dato</th></tr></thead>
+      <tbody>
+        <tr><td>Tres pruebas</td><td>Documental, teórica y real. La real es la más valiosa.</td></tr>
+        <tr><td>Fe, práctica y estudio</td><td>La práctica y el estudio derivan de la fe.</td></tr>
+        <tr><td>Práctica</td><td>Para uno mismo y para los demás: las dos ruedas de un carro.</td></tr>
+        <tr><td>Gongyo</td><td>Principal: daimoku. Complementaria: capítulos 2 y 16.</td></tr>
+        <tr><td>Tres obstáculos</td><td>Deseos mundanos, karma y retribución.</td></tr>
+        <tr><td>Cuatro demonios</td><td>Cinco componentes, deseos mundanos, muerte y Rey Demonio del Sexto Cielo.</td></tr>
+        <tr><td>Tres enemigos</td><td>Laicos, sacerdotes y falsos venerables arrogantes.</td></tr>
+        <tr><td>Karma</td><td>Escarcha bajo el sol de la sabiduría. Disminuir la retribución de nuestro karma.</td></tr>
+        <tr><td>Misión</td><td>Adoptar voluntariamente el karma apropiado.</td></tr>
+        <tr><td>Unidad</td><td>Distintas personas con un mismo propósito.</td></tr>
+        <tr><td>Vida diaria</td><td>La fe es la raíz; la vida diaria, el árbol. Ejemplo: Jamás Despreciar.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <header class="chapter">
+    <p>CAPÍTULO 4</p>
+    <h2>La historia de la Soka Gakkai</h2>
+  </header>
+
+  <!-- 4.1 -->
+  <section class="scene" id="s4-1">
+    <h3><span>4.1</span>Dos educadores (1920)</h3>
+    <div class="stack">
+      <p class="date">Tokio. Makiguchi tiene 48 años; Toda, 19.</p>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.1-p1.jpg" width="1152" height="768" alt="Calle de Tokio de la época, con faroles y un reloj de torre.">
+      </figure>
+      <p class="cap">Makiguchi nació en 1871 y Toda en 1900. Congenian de inmediato y desde entonces Makiguchi es su maestro de vida.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.1-p2.jpg" width="768" height="768" alt="Makiguchi, director de escuela, recibe al joven Toda.">
+          <span class="say" data-kind="speech" data-tip="36,35" style="left:50%;top:14%;width:86%;--fs:6cqw">La educación debe servir para la felicidad de cada niño</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.1-p3.jpg" width="768" height="768" alt="Se dan la mano; los dos sonríen.">
+          <span class="say" data-kind="speech" data-tip="63,19" style="left:54%;top:8.5%;width:60%;--fs:4.4cqw">¡Quiero aprender de usted, maestro!</span>
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Primer presidente: Tsunesaburo Makiguchi. Segundo presidente: Josei Toda.</p>
+    </div>
+  </section>
+
+  <!-- 4.2 -->
+  <section class="scene" id="s4-2">
+    <h3><span>4.2</span>El encuentro con el budismo (1928)</h3>
+    <div class="stack">
+      <p class="date">1928 · Tokio</p>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.2-p1.jpg" width="1152" height="768" alt="Makiguchi lee de noche un libro iluminado.">
+        <span class="say loud" data-kind="burst" data-tip="45,40" style="left:23%;top:27%;width:34%;--fs:3.5cqw">¡Esta enseñanza no contradice la ciencia ni la vida diaria!</span>
+      </figure>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.2-p2.jpg" width="768" height="768" alt="Primer plano de su cara sorprendida.">
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.2-p3.jpg" width="768" height="768" alt="Toda a su lado, decidido.">
+          <span class="say" data-kind="speech" data-tip="43,29" style="left:21%;top:20%;width:40%;--fs:5.4cqw">Maestro, yo también la practicaré</span>
+        </figure>
+      </div>
+      <p class="cap">Makiguchi adopta la fe en el budismo Nichiren a los 57 años y decide cambiar su forma de vivir. Toda lo sigue.</p>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>En 1928, Makiguchi (57 años) y Toda adoptan la fe.</p>
+    </div>
+  </section>
+
+  <!-- 4.3 -->
+  <section class="scene" id="s4-3">
+    <h3><span>4.3</span>Nace la Soka Kyoiku Gakkai (1930)</h3>
+    <div class="stack">
+      <p class="date">18 de noviembre de 1930 · Tokio</p>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.3-p1.jpg" width="1152" height="768" alt="Una imprenta antigua; salen hojas volando.">
+      </figure>
+      <p class="cap">Se publica el primer volumen de <i>El sistema pedagógico de la creación de valor</i>. Makiguchi es el autor y Toda, el editor.</p>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.3-p2.jpg" width="768" height="1152" alt="El libro abierto, con rayos de luz.">
+      </figure>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.3-p3.jpg" width="1152" height="768" alt="Makiguchi y Toda sostienen el primer ejemplar.">
+        <span class="say loud" data-kind="burst" data-tip="68,27" style="left:85%;top:31%;width:23%;--fs:3.3cqw">¡«Soka» significa creación de valor!</span>
+      </figure>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>El 18 de noviembre de 1930 se considera el día de la fundación de la Soka Gakkai.</p>
+    </div>
+  </section>
+
+  <!-- 4.4 -->
+  <section class="scene" id="s4-4">
+    <h3><span>4.4</span>Contra el militarismo (1943)</h3>
+    <div class="stack">
+      <p class="date">junio y julio de 1943 · templo principal y Tokio</p>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.4-p1.jpg" width="1152" height="768" alt="Soldados marchando y aviones de guerra sobre la ciudad.">
+      </figure>
+      <p class="cap">El gobierno militar impone el sintoísmo estatal. El clero de la Nichiren Shoshu cede por miedo; Makiguchi no.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.4-p2.jpg" width="768" height="768" alt="Sacerdotes le piden a Makiguchi aceptar el talismán sintoísta.">
+          <span class="say" data-kind="speech" data-tip="28,30" style="left:50%;top:13%;width:86%;--fs:6cqw">¿Por qué no aceptan el talismán?</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.4-p3.jpg" width="768" height="768" alt="Makiguchi, firme, se niega.">
+          <span class="say loud" data-kind="burst" data-tip="57,32" style="left:79%;top:24%;width:36%;--fs:5cqw">No. Eso va contra la Ley del Buda</span>
+        </figure>
+      </div>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.4-p4.jpg" width="1152" height="768" alt="La policía arresta a Makiguchi en Shimoda; ese mismo día, a Toda en Tokio.">
+      </figure>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>El 6 de julio de 1943 arrestan a 21 líderes de la Soka Kyoiku Gakkai, entre ellos Makiguchi y Toda.</p>
+    </div>
+  </section>
+
+  <!-- 4.5 -->
+  <section class="scene" id="s4-5">
+    <h3><span>4.5</span>Fiel hasta el final (1944)</h3>
+    <div class="stack">
+      <p class="date">18 de noviembre de 1944 · Penitenciaría de Tokio</p>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.5-p1.jpg" width="1152" height="768" alt="Celda fría; luz de luna por una ventanita con barrotes.">
+      </figure>
+      <p class="cap">Casi todos los detenidos abandonan la fe; Makiguchi y Toda resisten. Makiguchi muere de desnutrición a los 73 años.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.5-p2.jpg" width="768" height="768" alt="Makiguchi, anciano y delgado, sentado y sereno.">
+          <span class="say th" data-kind="thought" data-tip="50,34" style="left:50%;top:14%;width:86%;--fs:6cqw">Hasta el final, viviré tal como enseña el Daishonin</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.5-p3.jpg" width="768" height="768" alt="La ventana vacía al amanecer.">
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Muere el 18 de noviembre de 1944, el mismo día de la fundación.</p>
+    </div>
+  </section>
+
+  <!-- 4.6 -->
+  <section class="scene" id="s4-6">
+    <h3><span>4.6</span>La revelación en la cárcel (1944)</h3>
+    <div class="stack">
+      <p class="date">noviembre de 1944 · cárcel de Tokio</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.6-p1.jpg" width="768" height="768" alt="Toda lee el Sutra del loto con un rayo de luz.">
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.6-p2.jpg" width="768" height="768" alt="Entona daimoku; a su alrededor aparecen multitudes de bodhisattvas luminosos.">
+        </figure>
+      </div>
+      <p class="cap">Desde principios de 1944 lee a fondo el Sutra del loto y comprende que el Buda es la vida misma.</p>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.6-p3.jpg" width="768" height="1152" alt="Primer plano: lentes que reflejan la luz, grito de revelación.">
+        <span class="say loud" data-kind="burst" data-tip="72,21" style="left:50%;top:10%;width:90%;--fs:6.2cqw">¡Yo, Toda, soy un Bodhisattva de la Tierra!</span>
+      </figure>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>La revelación de Toda en prisión: «Yo, Toda, soy un Bodhisattva de la Tierra».</p>
+    </div>
+  </section>
+
+  <!-- 4.7 -->
+  <section class="scene" id="s4-7">
+    <h3><span>4.7</span>Reconstruir entre ruinas (1945)</h3>
+    <div class="stack">
+      <p class="date">3 de julio de 1945 · Tokio en ruinas</p>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.7-p1.jpg" width="1152" height="768" alt="Toda sale solo de la prisión.">
+      </figure>
+      <p class="cap">Tras dos años preso, empieza a reconstruir la organización. Su meta ya no es solo la educación, sino el kosen-rufu.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.7-p2.jpg" width="768" height="768" alt="Ciudad en ruinas bajo un sol grande al atardecer.">
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.7-p3.jpg" width="768" height="768" alt="Toda camina decidido entre los escombros.">
+          <span class="say" data-kind="speech" data-tip="56,22" style="left:75%;top:13%;width:44%;--fs:5.2cqw">Cumpliré la voluntad de mi maestro</span>
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Cambia el nombre de Soka Kyoiku Gakkai a <strong>Soka Gakkai</strong>, «Sociedad para la creación de valores».</p>
+    </div>
+  </section>
+
+  <!-- 4.8 -->
+  <section class="scene" id="s4-8">
+    <h3><span>4.8</span>El joven Ikeda conoce a Toda (1947)</h3>
+    <div class="stack">
+      <p class="date">14 de agosto de 1947 · reunión de diálogo en Tokio</p>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.8-p1.jpg" width="1152" height="768" alt="Ikeda niño en la guerra, mirando la ciudad bombardeada.">
+      </figure>
+      <p class="cap">Ikeda nació el 2 de enero de 1928 en Tokio. Diez días después de la reunión, el 24 de agosto, empieza a practicar.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.8-p2.jpg" width="768" height="768" alt="Sala con tatami; Toda habla; Ikeda, al fondo, levanta la mano.">
+          <span class="say" data-kind="speech" data-tip="71,52" style="left:50%;top:16%;width:76%;--fs:6cqw">¿Cuál es la manera correcta de vivir?</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.8-p3.jpg" width="768" height="768" alt="Toda le responde con calidez.">
+          <span class="say" data-kind="speech" data-tip="42,38" style="left:56%;top:17%;width:80%;--fs:6cqw">Practica, y lo comprobarás con tu propia vida</span>
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Se conocen el 14 de agosto de 1947. Ikeda tiene 19 años y Toda, 47.</p>
+    </div>
+  </section>
+
+  <!-- 4.9 -->
+  <section class="scene" id="s4-9">
+    <h3><span>4.9</span>La «Universidad Toda» (1950)</h3>
+    <div class="stack">
+      <p class="date">1950 · oficina de Toda en Tokio</p>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.9-p1.jpg" width="1152" height="768" alt="Papeles de deudas sobre un escritorio.">
+      </figure>
+      <p class="cap">La crisis de posguerra quiebra los negocios de Toda, y el 24 de agosto de 1950 renuncia como director general. Ikeda deja sus estudios nocturnos para apoyarlo.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.9-p2.jpg" width="768" height="768" alt="De noche, Toda le enseña a Ikeda con libros abiertos.">
+          <span class="say" data-kind="speech" data-tip="72,37" style="left:60%;top:15%;width:66%;--fs:6cqw">Maestro, yo lo apoyaré</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.9-p3.jpg" width="768" height="768" alt="Los dos mirando la ciudad por la ventana.">
+          <span class="say" data-kind="speech" data-tip="30,27" style="left:44%;top:16%;width:66%;--fs:6cqw">Te enseñaré todo lo que sé</span>
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Toda le enseña en persona durante casi diez años: la «Universidad Toda».</p>
+    </div>
+  </section>
+
+  <!-- 4.10 -->
+  <section class="scene" id="s4-10">
+    <h3><span>4.10</span>El segundo presidente (1951)</h3>
+    <div class="stack">
+      <p class="date">3 de mayo de 1951 · Tokio</p>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.10-p1.jpg" width="1152" height="768" alt="El primer número del Seikyo Shimbun sale de la imprenta (20 de abril).">
+        <span class="tag">Seikyo Shimbun (20 de abril)</span>
+      </figure>
+      <p class="cap">Asume la presidencia cuando hay unas 3000 personas. El Seikyo Shimbun publica su novela <i>La revolución humana</i>.</p>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.10-p2.jpg" width="768" height="1152" alt="Toda en el podio, con el puño en alto.">
+        <span class="say loud" data-kind="burst" data-tip="56,29" style="left:68%;top:13%;width:56%;--fs:5.6cqw">¡Llevaremos la membresía a 750&nbsp;000 familias!</span>
+      </figure>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.10-p3.jpg" width="1084" height="740" alt="Un público pequeño pero emocionado.">
+      </figure>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>El 3 de mayo de 1951 Toda asume como segundo presidente.</p>
+    </div>
+  </section>
+
+  <!-- 4.11 -->
+  <section class="scene" id="s4-11">
+    <h3><span>4.11</span>Lograr lo imposible (1952 y 1956)</h3>
+    <div class="stack">
+      <p class="date">febrero de 1952, cabildo Kamata (Tokio) · mayo de 1956, Osaka</p>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.11-p1.jpg" width="1152" height="768" alt="Jóvenes caminando casa por casa en invierno.">
+        <span class="tag">Campaña de Febrero de 1952</span>
+      </figure>
+      <p class="cap">En la Campaña de Febrero, el cabildo Kamata suma 201 familias en un mes. En 1956, Osaka suma 11&nbsp;111.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.11-p2.jpg" width="768" height="768" alt="El castillo de Osaka al fondo; una multitud subiendo la colina.">
+          <span class="say loud" data-kind="burst" data-tip="22,66" style="left:23%;top:21%;width:44%;--fs:5.8cqw">¡11&nbsp;111 familias en un solo mes!</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.11-p3.jpg" width="768" height="768" alt="Un periódico con el titular en grande.">
+          <span class="label" style="left:48%;top:30%;width:70%;white-space:normal;text-align:center;font-family:var(--sfx);font-weight:400;letter-spacing:.03em;border:none;background:none;transform:translate(-50%,-50%) rotate(-12deg);--fs:12cqw">¡Logran lo imposible!</span>
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Campaña de Febrero de 1952 (201 familias) y Osaka 1956 (11&nbsp;111 familias en un mes).</p>
+    </div>
+  </section>
+
+  <!-- 4.12 -->
+  <section class="scene" id="s4-12">
+    <h3><span>4.12</span>El incidente de Osaka (1957)</h3>
+    <div class="stack">
+      <p class="date">3 de julio de 1957 · Osaka</p>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.12-p1.jpg" width="1152" height="768" alt="Policías escoltan a Ikeda bajo la lluvia.">
+      </figure>
+      <p class="cap">Es arrestado injustamente el mismo día en que Toda había salido de prisión en 1945. Lo liberan el 17 de julio.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.12-p2.jpg" width="768" height="768" alt="Interrogatorio con una lámpara dura.">
+          <span class="say" data-kind="speech" data-tip="40,24" style="left:50%;top:12%;width:86%;--fs:5.6cqw">Si no confiesas, arrestaremos al presidente Toda</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.12-p3.jpg" width="768" height="768" alt="Ikeda pensativo en la celda.">
+          <span class="say th" data-kind="thought" data-tip="52,32" style="left:50%;top:15%;width:76%;--fs:6cqw">Debo proteger a mi maestro…</span>
+        </figure>
+      </div>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.12-p4.jpg" width="1152" height="593" alt="1962: sale del tribunal, libre.">
+        <span class="tag">1962</span>
+      </figure>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>El 25 de enero de 1962 es declarado inocente.</p>
+    </div>
+  </section>
+
+  <!-- 4.13 -->
+  <section class="scene" id="s4-13">
+    <h3><span>4.13</span>Contra las armas nucleares y el relevo (1957–1958)</h3>
+    <div class="stack">
+      <p class="date">8 de septiembre de 1957 (estadio) · 16 de marzo de 1958 (al pie del monte Fuji)</p>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.13-p1.jpg" width="1152" height="768" alt="Estadio lleno; una paloma blanca sobre el escenario.">
+        <span class="tag">8 de septiembre de 1957</span>
+      </figure>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.13-p2.jpg" width="768" height="768" alt="Toda proclama la declaración.">
+          <span class="say loud" data-kind="burst" data-tip="63,28" style="left:81%;top:33%;width:36%;--fs:5.4cqw">¡El uso de las armas nucleares es el mal absoluto!</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.13-p3.jpg" width="734" height="753" alt="El monte Fuji nevado; 6000 jóvenes reunidos.">
+          <span class="tag">16 de marzo de 1958</span>
+        </figure>
+      </div>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.13-p4.jpg" width="1152" height="768" alt="Toda les habla con fuerza; Ikeda a su lado.">
+        <span class="say loud" data-kind="burst" data-tip="37,22" style="left:79%;top:11%;width:40%;--fs:4cqw">¡Les confío el kosen-rufu!</span>
+      </figure>
+      <p class="cap">En diciembre de 1957 se alcanzan las 750&nbsp;000 familias. Toda fallece el 2 de abril de 1958, a los 58 años.</p>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>8 de septiembre de 1957: Declaración para la abolición de las armas nucleares. 16 de marzo de 1958: Día del kosen-rufu.</p>
+    </div>
+  </section>
+
+  <!-- 4.14 -->
+  <section class="scene" id="s4-14">
+    <h3><span>4.14</span>El tercer presidente (1960)</h3>
+    <div class="stack">
+      <p class="date">3 de mayo y 2 de octubre de 1960 · Tokio y el cielo del Pacífico</p>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.14-p1.jpg" width="1152" height="768" alt="Ikeda asume la presidencia.">
+      </figure>
+      <p class="cap">Asume en la misma fecha en que Toda asumió en 1951. En octubre parte hacia América del Norte y del Sur.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.14-p2.jpg" width="768" height="768" alt="Un avión sobre las nubes, con líneas de velocidad.">
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.14-p3.jpg" width="768" height="768" alt="Ikeda mira por la ventanilla hacia el continente americano.">
+          <span class="say" data-kind="speech" data-tip="68,22" style="left:40%;top:10%;width:70%;--fs:6cqw">Llevaré esta enseñanza a todo el mundo</span>
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>El 2 de octubre de 1960 es el primer paso del kosen-rufu mundial.</p>
+    </div>
+  </section>
+
+  <!-- 4.15 -->
+  <section class="scene" id="s4-15">
+    <h3><span>4.15</span>Paz, cultura y educación (1965–1975)</h3>
+    <div class="stack">
+      <p class="date">de 1965 a 1975 · Japón, Londres, China, la URSS y EE. UU.</p>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.15-p1.jpg" width="1152" height="768" alt="Ikeda escribe La revolución humana (desde 1965).">
+      </figure>
+      <p class="cap">Funda el sistema educativo Soka y la Universidad Soka (1971). En 1972 dialoga con Arnold J. Toynbee durante 40 horas a lo largo de dos años.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.15-p2.jpg" width="768" height="768" alt="Un campus universitario nuevo con estudiantes.">
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.15-p3.jpg" width="768" height="768" alt="Ikeda y un historiador británico conversan junto a una mesa con libros.">
+          <span class="say" data-kind="speech" data-tip="30,30" style="left:52%;top:15%;width:70%;--fs:8cqw">El diálogo abre caminos de paz</span>
+        </figure>
+      </div>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.15-p4.jpg" width="1152" height="768" alt="Banderas de varios países y apretones de manos.">
+      </figure>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>En 1974 y 1975, en plena Guerra Fría, viaja a China, la URSS y EE. UU. para abrir caminos de paz.</p>
+    </div>
+  </section>
+
+  <!-- 4.16 -->
+  <section class="scene" id="s4-16">
+    <h3><span>4.16</span>Nace la SGI (1975)</h3>
+    <div class="stack">
+      <p class="date">26 de enero de 1975 · isla de Guam</p>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.16-p1.jpg" width="1152" height="768" alt="Playa con palmeras y mar brillante.">
+      </figure>
+      <p class="cap">Se funda la Soka Gakkai Internacional con Ikeda como presidente. Desde 1983 publica cada 26 de enero una propuesta de paz.</p>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.16-p2.jpg" width="768" height="1152" alt="Personas de muchos países con los brazos en alto.">
+        <span class="say loud" data-kind="burst" data-tip="50,40" style="left:50%;top:15%;width:66%;--fs:7cqw">¡Somos de 51 países y territorios!</span>
+      </figure>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.16-p3.jpg" width="1152" height="768" alt="Ikeda saluda desde el frente.">
+      </figure>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>26 de enero de 1975: fundación de la SGI en Guam.</p>
+    </div>
+  </section>
+
+  <!-- 4.17 -->
+  <section class="scene" id="s4-17">
+    <h3><span>4.17</span>La nueva era mundial (1979–2023)</h3>
+    <div class="stack">
+      <p class="date">de 1979 a 2023 · todo el mundo</p>
+      <figure class="panel" data-panel>
+        <img src="img/c4/4.17-p1.jpg" width="1152" height="768" alt="Abril de 1979: Ikeda renuncia a la presidencia para proteger a los miembros.">
+        <span class="tag">Abril de 1979</span>
+      </figure>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.17-p2.jpg" width="768" height="768" alt="Un globo terráqueo con puntos de luz conectados.">
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c4/4.17-p3.jpg" width="768" height="768" alt="Miembros de muchos países de espaldas, mirando un amanecer.">
+        </figure>
+      </div>
+      <p class="cap">Renuncia en 1979 y asume como presidente honorario. Desde 1991 comienza una nueva era. Fallece el 15 de noviembre de 2023, a los 95 años.</p>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Hoy hay miembros en 192 países y territorios.</p>
+    </div>
+  </section>
+
+  <section class="review" id="repaso-4">
+    <h3>Ficha de repaso · Capítulo 4</h3>
+    <table>
+      <thead><tr><th>Fecha conmemorativa</th><th>Hecho</th></tr></thead>
+      <tbody>
+        <tr><td>26 de enero</td><td>1975: se funda la SGI en Guam; Ikeda es su presidente.</td></tr>
+        <tr><td>16 de marzo</td><td>1958: Toda transfiere el kosen-rufu a los jóvenes. Día del kosen-rufu.</td></tr>
+        <tr><td>3 de mayo</td><td>1951: Toda asume la segunda presidencia. 1960: Ikeda asume la tercera.</td></tr>
+        <tr><td>3 de julio</td><td>1945: Toda sale de la cárcel. 1957: arresto de Ikeda (incidente de Osaka).</td></tr>
+        <tr><td>2 de octubre</td><td>1960: Ikeda parte a América, primer paso del kosen-rufu mundial.</td></tr>
+        <tr><td>18 de noviembre</td><td>1930: publicación de <i>El sistema pedagógico de la creación de valor</i>, fundación. 1944: muere Makiguchi en prisión.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <header class="chapter">
+    <p>CAPÍTULO 5</p>
+    <h2>El repudio a los errores del clero de la Nichiren Shoshu bajo la prelatura de Nikken</h2>
+  </header>
+
+  <!-- 5.1 -->
+  <section class="scene" id="s5-1">
+    <h3><span>5.1</span>Cortar el mal de raíz</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c5/5.1-p1.jpg" width="1152" height="768" alt="El Daishonin con un rollo, a la luz de una lámpara.">
+        <span class="say" data-kind="speech" data-tip="47,30" style="left:70%;top:22%;width:44%;--fs:3.6cqw">En lugar de ofrendar diez mil plegarias como remedio, mejor sería proscribir simplemente este único mal</span>
+      </figure>
+      <p class="cap">Practicar correctamente incluye luchar siempre contra las influencias que confunden a la gente. El material llama «secta Nikken» al clero de la Nichiren Shoshu bajo Nikken Abe (1922–2019).</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c5/5.1-p2.jpg" width="768" height="768" alt="Un árbol seco y retorcido con raíces oscuras bajo tierra.">
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c5/5.1-p3.jpg" width="768" height="768" alt="Un haz de luz corta las raíces de un solo trazo.">
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Nikken se designó 67.º sumo prelado. En diciembre de 2005 pasó el cargo a Nichinyo.</p>
+    </div>
+  </section>
+
+  <!-- 5.2 -->
+  <section class="scene" id="s5-2">
+    <h3><span>5.2</span>Los enemigos del Sutra del loto</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c5/5.2-p1.jpg" width="1152" height="768" alt="Ryokan entre velas, venerado por una fila de personas.">
+      </figure>
+      <p class="cap">Ryokan, del templo Gokuraku-ji, era visto como un «buda viviente», pero conspiró contra el Daishonin. Según el material, hoy esa expresión se aplica a Nikken.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c5/5.2-p2.jpg" width="768" height="768" alt="Su sombra en la pared, enorme y amenazante.">
+          <span class="say th" data-kind="speech" data-tip="44,15" style="left:21%;top:14%;width:40%;--fs:5.6cqw">Haré que las autoridades lo persigan…</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c5/5.2-p3.jpg" width="768" height="768" alt="El Daishonin, pequeño pero firme, en una puerta de luz.">
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>«Enemigos del Sutra del loto» son quienes alejan a la gente de la enseñanza correcta. «Si no denuncia a los enemigos del Sutra del loto, le será imposible entrar en el Camino [del Buda]».</p>
+    </div>
+  </section>
+
+  <!-- 5.3 -->
+  <section class="scene" id="s5-3">
+    <h3><span>5.3</span>La historia con el clero (hasta 1990)</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c5/5.3-p1.jpg" width="1152" height="768" alt="Nikko Shonin guarda los escritos con cuidado.">
+      </figure>
+      <p class="cap">Según el material, el espíritu de Nikko se diluyó en formalidad y ritualismo. Aun así, la Soka Gakkai protegió al clero.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c5/5.3-p2.jpg" width="768" height="768" alt="Posguerra: miembros construyen templos, uno tras otro.">
+          <span class="sfx" style="left:50%;top:15%;--fs:13cqw">¡350 templos!</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c5/5.3-p3.jpg" width="768" height="768" alt="Una grieta roja se abre en el suelo entre los templos y la gente.">
+        </figure>
+      </div>
+      <figure class="panel" data-panel>
+        <img src="img/c5/5.3-p4.jpg" width="1152" height="768" alt="Una tijera simbólica sobre un documento: «Operación C».">
+        <span class="label" style="left:38%;top:78%;--fs:5cqw">Operación C</span>
+      </figure>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Tras la guerra, la Soka Gakkai construyó y donó más de 350 templos. En 1990 Nikken lanzó la «Operación C» (de <i>cut</i>, cortar). En diciembre de 1990 destituyó a Ikeda como representante de los laicos, y el clero rechazó todo diálogo.</p>
+    </div>
+  </section>
+
+  <!-- 5.4 -->
+  <section class="scene" id="s5-4">
+    <h3><span>5.4</span>La excomunión (1991)</h3>
+    <div class="stack">
+      <p class="date">7 y 28 de noviembre de 1991</p>
+      <figure class="panel" data-panel>
+        <img src="img/c5/5.4-p1.jpg" width="768" height="1152" alt="Un documento sellado que se rompe en dos.">
+        <span class="sfx" style="left:50%;top:14%;--fs:16cqw">¡CRAAAC!</span>
+      </figure>
+      <p class="cap">El clero envía una «Orden de disolución» y después una «Nota de excomunión», y deja de otorgar el Gohonzon a los miembros.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c5/5.4-p2.jpg" width="768" height="768" alt="Miembros tranquilos frente a un altar, con un Gohonzon nuevo.">
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c5/5.4-p3.jpg" width="731" height="703" alt="1998: un gran edificio moderno se derrumba entre polvo.">
+          <span class="tag">1998</span>
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>En 1993 la Soka Gakkai empieza a otorgar un Gohonzon transcrito por Nichikan Shonin. En 1998 se demuele el Sho Hondo, construido en 1972 con donaciones de ocho millones de miembros.</p>
+    </div>
+  </section>
+
+  <!-- 5.5 -->
+  <section class="scene" id="s5-5">
+    <h3><span>5.5</span>Errores de doctrina, según el material</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c5/5.5-p1.jpg" width="1152" height="768" alt="Un trono alto y vacío con gente inclinada ante él, y a un lado el Gohonzon iluminado.">
+      </figure>
+      <p class="cap">Según el material: intentar destruir el kosen-rufu causa desunión en la Orden budista; venerar al sumo prelado contradice que el único objeto de devoción es el Gohonzon; y la «herencia» no es secreta.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c5/5.5-p2.jpg" width="768" height="768" alt="Nikko Shonin escribe sus advertencias en 1333.">
+          <span class="tag" style="top:auto;bottom:8px">1333</span>
+          <span class="say" data-kind="speech" data-tip="40,36" style="left:50%;top:16%;width:96%;--fs:5.5cqw">No deberán seguir ni siquiera al Sumo Prelado si este contradice la Ley del Buda y postula sus propias ideas</span>
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c5/5.5-p3.jpg" width="768" height="768" alt="Un cofre cerrado con candado, frente a una puerta abierta llena de gente.">
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>Las cinco faltas capitales: matar al padre, a la madre o a un arhat, herir a un buda y causar desunión en la Orden. La herencia es «herencia de la fe», abierta a todos.</p>
+    </div>
+  </section>
+
+  <!-- 5.6 -->
+  <section class="scene" id="s5-6">
+    <h3><span>5.6</span>Errores de conducta, según el material</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c5/5.6-p1.jpg" width="1152" height="768" alt="Una balanza inclinada: de un lado un sacerdote en sombra, del otro un grupo de laicos.">
+      </figure>
+      <p class="cap">Según el material: tratar a los laicos como inferiores, condicionar la budeidad de los difuntos a ceremonias pagadas, y la codicia.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c5/5.6-p2.jpg" width="768" height="768" alt="Una familia en un funeral, con monedas cayendo.">
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c5/5.6-p3.jpg" width="768" height="768" alt="Contraste: una persona sencilla entonando sola, en paz.">
+        </figure>
+      </div>
+      <p class="cap">Daishonin: «Los verdaderos sacerdotes son los honestos, los que se sienten satisfechos con lo poco que desean».</p>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>El Daishonin enseñó la igualdad: cualquiera que abrace el sutra, «sacerdote o laico, monja o seguidora laica», es emisario del Buda. El «budismo funerario» viene del sistema de registro del período Edo (1603–1867).</p>
+    </div>
+  </section>
+
+  <!-- 5.7 -->
+  <section class="scene" id="s5-7">
+    <h3><span>5.7</span>La independencia espiritual (1991)</h3>
+    <div class="stack">
+      <p class="date">28 de noviembre de 1991</p>
+      <figure class="panel" data-panel>
+        <img src="img/c5/5.7-p1.jpg" width="624" height="1018" alt="Cadenas que se rompen frente a un sol enorme.">
+      </figure>
+      <p class="cap">Para la Soka Gakkai, el día de la excomunión se convirtió en el día de su independencia espiritual. Según el material, la membresía del clero cayó al 2 % de lo que era.</p>
+      <div class="row">
+        <figure class="panel" data-panel>
+          <img src="img/c5/5.7-p2.jpg" width="768" height="768" alt="Aves blancas volando.">
+        </figure>
+        <figure class="panel" data-panel>
+          <img src="img/c5/5.7-p3.jpg" width="768" height="768" alt="Una multitud con los brazos en alto.">
+          <span class="say loud" data-kind="burst" data-tip="50,40" style="left:50%;top:18%;width:80%;--fs:8cqw">¡Independencia espiritual!</span>
+        </figure>
+      </div>
+      <p class="cap key r"><b>CLAVE PARA EL EXAMEN</b>28 de noviembre de 1991: Día de la Independencia Espiritual. Hoy hay miembros en 192 países y territorios.</p>
+    </div>
+  </section>
+
+  <!-- Cierre -->
+  <section class="scene" id="cierre">
+    <h3>Cierre · ¡Éxito en el examen!</h3>
+    <div class="stack">
+      <figure class="panel" data-panel>
+        <img src="img/c5/cierre-p1.jpg" width="698" height="1135" alt="Fuegos artificiales sobre una ciudad de noche y una multitud celebrando.">
+        <span class="say loud" data-kind="burst" data-tip="50,24" style="left:50%;top:12%;width:80%;--fs:10cqw">¡Éxito en el examen!</span>
+      </figure>
+    </div>
+  </section>
+
+  <section class="review" id="repaso-5">
+    <h3>Ficha de repaso · Capítulo 5</h3>
+    <table>
+      <thead><tr><th>Fecha o tema</th><th>Dato</th></tr></thead>
+      <tbody>
+        <tr><td>Nikken Abe</td><td>67.º sumo prelado de la Nichiren Shoshu (1922–2019).</td></tr>
+        <tr><td>1990</td><td>«Operación C». Segundo incidente con el clero.</td></tr>
+        <tr><td>7 nov. 1991</td><td>«Orden de disolución».</td></tr>
+        <tr><td>28 nov. 1991</td><td>«Nota de excomunión». Día de la Independencia Espiritual.</td></tr>
+        <tr><td>1993</td><td>Gohonzon transcrito por Nichikan Shonin.</td></tr>
+        <tr><td>1998</td><td>Demolición del Sho Hondo (construido en 1972).</td></tr>
+        <tr><td>Cinco faltas</td><td>Matar al padre, a la madre o a un arhat; herir a un buda; causar desunión en la Orden.</td></tr>
+        <tr><td>Seis errores</td><td>Destruir el kosen-rufu, culto al sumo prelado, «herencia» secreta, discriminar al laicado, rituales para lucrar, corrupción.</td></tr>
+        <tr><td>Nikko Shonin</td><td>«Veintiséis advertencias» (1333): no seguir al sumo prelado si contradice la Ley.</td></tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<script>
+const NS="http://www.w3.org/2000/svg";
+function el(n,a){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);return e}
+function layout(){
+  document.querySelectorAll("[data-panel]").forEach(p=>{
+    p.querySelector("svg")?.remove();
+    const W=p.clientWidth,H=p.clientHeight;if(!W||!H)return;
+    const svg=el("svg",{viewBox:`0 0 ${W} ${H}`});
+    const sw=Math.max(2,W*.006);
+    p.querySelectorAll(".say").forEach(s=>{
+      const cx=s.offsetLeft,cy=s.offsetTop,w=s.offsetWidth,h=s.offsetHeight;
+      const [tx,ty]=s.dataset.tip.split(",").map(Number),X=tx/100*W,Y=ty/100*H;
+      const kind=s.dataset.kind;
+      let rx=w/2*1.22+W*.02,ry=h/2*1.4+W*.018;
+      const ang=Math.atan2((Y-cy)/ry,(X-cx)/rx);
+      const g=el("g",{fill:"#fff",stroke:"#111","stroke-width":sw,"stroke-linejoin":"round"});
+      if(kind==="burst"){
+        rx*=1.06;ry*=1.12;const N=22,pts=[];
+        for(let i=0;i<N;i++){const a=i/N*Math.PI*2,r=i%2?1.2:.97;pts.push([cx+Math.cos(a)*rx*r,cy+Math.sin(a)*ry*r,a])}
+        let k=1,best=9;for(let i=1;i<N;i+=2){let d=Math.abs(pts[i][2]-((ang+2*Math.PI)%(2*Math.PI)));d=Math.min(d,2*Math.PI-d);if(d<best){best=d;k=i}}
+        pts[k][0]=X;pts[k][1]=Y;
+        g.appendChild(el("path",{d:"M"+pts.map(q=>q[0].toFixed(1)+","+q[1].toFixed(1)).join(" L")+" Z"}));
+      }else if(kind==="speech"){
+        // Ellipse with a pointed tail: arc the long way round, then out to the tip.
+        const d=.22,a1=ang-d,a2=ang+d,P=t=>[(cx+Math.cos(t)*rx).toFixed(1),(cy+Math.sin(t)*ry).toFixed(1)];
+        const [x1,y1]=P(a1),[x2,y2]=P(a2);
+        g.appendChild(el("path",{d:`M${x2},${y2} A${rx.toFixed(1)},${ry.toFixed(1)} 0 1 1 ${x1},${y1} L${X.toFixed(1)},${Y.toFixed(1)} Z`}));
+      }else{
+        g.appendChild(el("ellipse",{cx,cy,rx,ry}));
+        const dx=X-cx,dy=Y-cy,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L,te=1/Math.sqrt((ux/rx)**2+(uy/ry)**2);
+        [[.3,.07],[.62,.045]].forEach(q=>{const d=te+(L-te)*q[0];g.appendChild(el("circle",{cx:cx+ux*d,cy:cy+uy*d,r:W*q[1]*.5}))});
+      }
+      svg.appendChild(g);
+    });
+    p.insertBefore(svg,p.querySelector(".say,.sfx,.tag,.label,.kanji"));
+  });
+}
+const run=()=>requestAnimationFrame(layout);
+addEventListener("load",run);addEventListener("resize",run);
+if(document.fonts)document.fonts.ready.then(run);
+document.querySelectorAll(".panel img").forEach(i=>i.complete?run():i.addEventListener("load",run));
+</script>
